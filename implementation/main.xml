@@ -1,1 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+int core1_t = 0;
+int core1_preemption_t = 0;
+int core1_readyQueue[4] = {0, 0, 0, 0};
 
+bool checked_readyQueue = false;
+
+int findTaskInReadyQueue(){
+    
+    int i = 0;
+    for(i : int[0, 3]){
+
+        if(core1_readyQueue[i] == 1){
+            return i + 1;
+        }
+
+    }
+
+    return -1;
+
+}
+
+int core2_t = 0;
+</declaration>
+	<template>
+		<name>Task2</name>
+		<parameter>urgent chan &amp;execute_task2, urgent chan &amp;goBackInReadyQueue_task2, urgent chan &amp;task2_executed, urgent chan &amp;task1_arrived</parameter>
+		<declaration>int task2_t = 0;</declaration>
+		<location id="id0" x="8" y="34">
+			<name x="-34" y="51">Reset_clock</name>
+		</location>
+		<location id="id1" x="8" y="-229">
+			<name x="-2" y="-263">Ready</name>
+		</location>
+		<location id="id2" x="8" y="-85">
+			<name x="-77" y="-85">Executing</name>
+		</location>
+		<init ref="id1"/>
+		<transition id="id3">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-255" y="-102">task2_executed!</label>
+			<nail x="-128" y="34"/>
+			<nail x="-128" y="-229"/>
+		</transition>
+		<transition id="id4">
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-204" y="-187">goBackInReadyQueue_task2?</label>
+			<nail x="-102" y="-153"/>
+		</transition>
+		<transition id="id5">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="17" y="-187">execute_task2?</label>
+		</transition>
+		<transition id="id6">
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="guard" x="17" y="-34">task2_t &gt;= 2</label>
+			<label kind="assignment" x="25" y="-9">task2_t = 0</label>
+		</transition>
+		<transition id="id7">
+			<source ref="id2"/>
+			<target ref="id2"/>
+			<label kind="guard" x="76" y="-102">task2_t &lt; 2</label>
+			<label kind="assignment" x="76" y="-127">task2_t = task2_t + 1</label>
+			<nail x="59" y="-59"/>
+			<nail x="59" y="-136"/>
+		</transition>
+	</template>
+	<template>
+		<name>Core2</name>
+		<parameter>urgent chan &amp;execute_task1, urgent chan &amp;execute_task2, urgent chan &amp;goBackInReadyQueue_task1, urgent chan &amp;goBackInReadyQueue_task2, urgent chan &amp;task1_executed, urgent chan &amp;task2_executed, urgent chan &amp;task1_arrived, urgent chan &amp;task2_arrived</parameter>
+		<location id="id8" x="-153" y="102">
+			<name x="-204" y="118">Executing_task1</name>
+		</location>
+		<location id="id9" x="102" y="-25">
+			<name x="68" y="-59">Idle</name>
+		</location>
+		<location id="id10" x="102" y="94">
+			<name x="60" y="111">Reset_clock</name>
+		</location>
+		<location id="id11" x="-42" y="-50">
+		</location>
+		<init ref="id11"/>
+		<transition id="id12">
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-306" y="35">task2_executed?</label>
+			<label kind="assignment" x="-297" y="-50">core2_t = core2_t + 2</label>
+			<nail x="-204" y="-25"/>
+		</transition>
+		<transition id="id13">
+			<source ref="id10"/>
+			<target ref="id9"/>
+			<nail x="85" y="26"/>
+		</transition>
+		<transition id="id14">
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-76" y="60">core2_t % 6 == 0</label>
+			<label kind="synchronisation" x="-102" y="18">execute_task2!</label>
+		</transition>
+		<transition id="id15">
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="guard" x="111" y="26">core2_t &gt;= 25</label>
+			<label kind="assignment" x="119" y="52">core2_t = 0</label>
+		</transition>
+		<transition id="id16">
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="guard" x="170" y="-42">core2_t &lt; 25 &amp;&amp; core2_t % 6 != 0</label>
+			<label kind="assignment" x="170" y="-67">core2_t = core2_t + 1</label>
+			<nail x="153" y="1"/>
+			<nail x="153" y="-76"/>
+		</transition>
+		<transition id="id17">
+			<source ref="id11"/>
+			<target ref="id9"/>
+		</transition>
+	</template>
+	<template>
+		<name>Task1</name>
+		<parameter>urgent chan &amp;execute_task1, urgent chan &amp;goBackInReadyQueue_task1, urgent chan &amp;task1_executed, urgent chan &amp;task2_arrived</parameter>
+		<declaration>int task1_t = 0;
+</declaration>
+		<location id="id18" x="-221" y="-34">
+			<name x="-263" y="-17">Reset_clock</name>
+		</location>
+		<location id="id19" x="-221" y="-153">
+			<name x="-306" y="-136">Executing</name>
+		</location>
+		<location id="id20" x="-221" y="-297">
+			<name x="-231" y="-331">Ready</name>
+		</location>
+		<location id="id21" x="-476" y="-221">
+			<name x="-578" y="-255">Adding_task2_toReadyQueue</name>
+		</location>
+		<init ref="id20"/>
+		<transition id="id22">
+			<source ref="id21"/>
+			<target ref="id19"/>
+			<nail x="-408" y="-144"/>
+		</transition>
+		<transition id="id23">
+			<source ref="id19"/>
+			<target ref="id21"/>
+			<label kind="guard" x="-629" y="-238">(core1_t + task1_t) % 6 == 0 &amp;&amp; findTaskInReadyQueue() != 2</label>
+			<label kind="assignment" x="-442" y="-212">core1_readyQueue[1] = 1</label>
+			<nail x="-306" y="-204"/>
+		</transition>
+		<transition id="id24">
+			<source ref="id18"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-824" y="-170">task1_executed!</label>
+			<nail x="-697" y="-34"/>
+			<nail x="-697" y="-297"/>
+		</transition>
+		<transition id="id25">
+			<source ref="id20"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="-212" y="-280">execute_task1?</label>
+		</transition>
+		<transition id="id26">
+			<source ref="id19"/>
+			<target ref="id18"/>
+			<label kind="guard" x="-212" y="-102">task1_t &gt;= 3</label>
+			<label kind="assignment" x="-204" y="-77">task1_t = 0</label>
+		</transition>
+		<transition id="id27">
+			<source ref="id19"/>
+			<target ref="id19"/>
+			<label kind="guard" x="-153" y="-170">task1_t &lt; 4 &amp;&amp; !((core1_t + task1_t) % 6 == 0 &amp;&amp; findTaskInReadyQueue() != 2)</label>
+			<label kind="assignment" x="-153" y="-195">task1_t = task1_t + 1</label>
+			<nail x="-170" y="-127"/>
+			<nail x="-170" y="-204"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Core1</name>
+		<parameter>urgent chan &amp;execute_task1, urgent chan &amp;execute_task2, urgent chan &amp;goBackInReadyQueue_task1, urgent chan &amp;goBackInReadyQueue_task2, urgent chan &amp;task1_executed, urgent chan &amp;task2_executed, urgent chan &amp;task1_arrived, urgent chan &amp;task2_arrived</parameter>
+		<declaration>// Place local declarations here.
+
+</declaration>
+		<location id="id28" x="-595" y="-221">
+		</location>
+		<location id="id29" x="-136" y="-85">
+			<name x="-170" y="-119">Idle</name>
+		</location>
+		<location id="id30" x="-595" y="136">
+			<name x="-739" y="136">Executing_task1</name>
+		</location>
+		<location id="id31" x="51" y="229">
+			<name x="84" y="212">Executing_task2</name>
+		</location>
+		<location id="id32" x="-204" y="-204">
+			<name x="-214" y="-238">Adding_task1_toReadyQueue</name>
+		</location>
+		<location id="id33" x="-272" y="153">
+			<name x="-382" y="170">Adding_task2_toReadyQueue</name>
+		</location>
+		<init ref="id28"/>
+		<transition id="id34">
+			<source ref="id33"/>
+			<target ref="id29"/>
+			<nail x="-136" y="153"/>
+		</transition>
+		<transition id="id35">
+			<source ref="id29"/>
+			<target ref="id33"/>
+			<label kind="guard" x="-459" y="102">core1_t % 6 == 0 &amp;&amp; findTaskInReadyQueue() != 2</label>
+			<label kind="assignment" x="-502" y="119">core1_readyQueue[1] = 1</label>
+		</transition>
+		<transition id="id36">
+			<source ref="id29"/>
+			<target ref="id30"/>
+			<label kind="guard" x="-518" y="34">findTaskInReadyQueue() == 1</label>
+			<label kind="synchronisation" x="-476" y="8">execute_task1!</label>
+			<label kind="assignment" x="-527" y="-17">core1_readyQueue[0] = 0</label>
+		</transition>
+		<transition id="id37">
+			<source ref="id32"/>
+			<target ref="id29"/>
+			<nail x="-195" y="-144"/>
+		</transition>
+		<transition id="id38">
+			<source ref="id29"/>
+			<target ref="id32"/>
+			<label kind="guard" x="-153" y="-212">core1_t % 5 == 0 &amp;&amp; findTaskInReadyQueue() != 1</label>
+			<label kind="assignment" x="-153" y="-195">core1_readyQueue[0] = 1</label>
+			<nail x="-127" y="-161"/>
+		</transition>
+		<transition id="id39">
+			<source ref="id29"/>
+			<target ref="id31"/>
+			<label kind="guard" x="-8" y="-25">findTaskInReadyQueue() == 2</label>
+			<label kind="synchronisation" x="25" y="0">execute_task2!</label>
+			<label kind="assignment" x="34" y="17">core1_readyQueue[1] = 0</label>
+			<nail x="25" y="17"/>
+		</transition>
+		<transition id="id40">
+			<source ref="id31"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="-85" y="127">task2_executed?</label>
+			<label kind="assignment" x="-110" y="144">core1_t = core1_t + 2</label>
+			<nail x="-93" y="25"/>
+			<nail x="-119" y="-42"/>
+		</transition>
+		<transition id="id41">
+			<source ref="id30"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="-739" y="-25">task1_executed?</label>
+			<label kind="assignment" x="-688" y="-118">core1_t = core1_t + 3</label>
+			<nail x="-595" y="-93"/>
+		</transition>
+		<transition id="id42">
+			<source ref="id29"/>
+			<target ref="id29"/>
+			<label kind="guard" x="-76" y="-127">core1_t % 5 != 0 &amp;&amp; core1_t % 6 != 0 &amp;&amp; findTaskInReadyQueue() == -1</label>
+			<label kind="assignment" x="-85" y="-144">core1_t = core1_t + 1</label>
+			<nail x="-85" y="-59"/>
+			<nail x="-85" y="-136"/>
+		</transition>
+		<transition id="id43">
+			<source ref="id28"/>
+			<target ref="id29"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+urgent chan execute_task1;
+urgent chan execute_task2;
+
+urgent chan task1_arrived;
+urgent chan task2_arrived;
+
+urgent chan goBackInReadyQueue_task1;
+urgent chan goBackInReadyQueue_task2;
+
+
+urgent chan task1_executed;
+urgent chan task2_executed;
+
+core1 = Core1(execute_task1, execute_task2, goBackInReadyQueue_task1, goBackInReadyQueue_task2, task1_executed, task2_executed, task1_arrived, task2_arrived);
+core2 = Core2(execute_task1, execute_task2, goBackInReadyQueue_task1, goBackInReadyQueue_task2, task1_executed, task2_executed, task1_arrived, task2_arrived);
+
+
+task1 = Task1(execute_task1, goBackInReadyQueue_task1, task1_executed, task2_arrived);
+task2 = Task2(execute_task2, goBackInReadyQueue_task2, task2_executed, task1_arrived);
+
+// List one or more processes to be composed into a system.
+system core1, task1, task2;
+</system>
+	<queries>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+	</queries>
+</nta>
